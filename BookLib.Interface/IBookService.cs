@@ -5,7 +5,7 @@ namespace BookLib.Interface
     public interface IBookService
     {
         Book GetBook(int id);
-        Book Create(int id);
-        Book Update(int id);
+        Book Create(Book book);
+        Book Update(Book book);
     }
 }

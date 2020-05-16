@@ -1,4 +1,6 @@
 using BookLib.Data;
+using BookLib.Interface;
+using BookLib.Service;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -25,6 +27,10 @@ namespace BookLib
 
             services.AddDbContext<BookLibContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+
+            services.AddScoped<IBookService, BookService>();
+            services.AddScoped<IBookingService, BookingService>();
+            services.AddScoped<IUserService, UserService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

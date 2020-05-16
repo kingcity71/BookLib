@@ -1,0 +1,54 @@
+﻿@using BookLib.Models;
+@model BookViewModel
+@{
+    ViewData["Title"] = "Create";
+}
+<form method="post">
+    @*@Html.HiddenFor(x=>x.Id)*@
+    @Html.HiddenFor(x=>x.PhotoBase64)
+    <div class="container">
+        <div class="row m-1 w-100">
+            <h3>Создание книги</h3>
+        </div>
+        <div class="row m-1 w-100">
+            <div class="col-9">
+                <div class="row  m-1 w-100">
+                    <div class="col-3">
+                        <label>Название</label>
+                    </div>
+                    <div class="col-9">
+                        @Html.TextBoxFor(x => x.Name, new { @class = "form-control w-100" })
+                    </div>
+                </div>
+                <div class="row m-1 w-100">
+                    <div class="col-3">
+                        <label>Описание</label>
+                    </div>
+                    <div class="col-9">
+                        @Html.TextAreaFor(x => x.Description, new { @class = "form-control" })
+                    </div>
+                </div>
+                <div class="row m-1 w-100">
+                    <div class="p-1 w-100">
+                        <div class="custom-file">
+                            <input type="file" class="custom-file-input" asp-for="Photo">
+                            <label class="custom-file-label" asp-for="Photo">Загрузка фото</label>
+                        </div>
+                    </div>
+                </div>
+                <button class="btn btn-success">Сохранить</button>
+            </div>
+            <div class="col-3">
+                @if (Model?.PhotoBase64 == null)
+                {
+                    <img src="~/assets/upload.png" class="w-100" />
+                }
+                else
+                {
+                    <img src="@Model.PhotoBase64" class="w-100" />
+                }
+
+            </div>
+        </div>
+    </div>
+</form>

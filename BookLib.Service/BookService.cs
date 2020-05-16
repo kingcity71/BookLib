@@ -1,4 +1,5 @@
-﻿using BookLib.Entity;
+﻿using BookLib.Data;
+using BookLib.Entity;
 using BookLib.Interface;
 using System;
 using System.Collections.Generic;
@@ -8,9 +9,17 @@ namespace BookLib.Service
 {
     public class BookService : IBookService
     {
-        public Book Create(int id)
+        private readonly BookLibContext _context;
+
+        public BookService(BookLibContext context)
         {
-            throw new NotImplementedException();
+            _context = context;
+        }
+        public Book Create(Book book)
+        {
+            var bookEntity = _context.Add(book);
+            _context.SaveChanges();
+            return bookEntity.Entity;
         }
 
         public Book GetBook(int id)
@@ -18,7 +27,7 @@ namespace BookLib.Service
             throw new NotImplementedException();
         }
 
-        public Book Update(int id)
+        public Book Update(Book book)
         {
             throw new NotImplementedException();
         }
