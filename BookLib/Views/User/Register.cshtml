@@ -1,0 +1,69 @@
+﻿@model BookLib.Models.RegisterViewModel
+<style>
+    .centerr {
+        margin: 0 auto;
+        width: 70%;
+    }
+
+    .field-validation-error {
+        color: #b94a48;
+    }
+
+    .field-validation-valid {
+        display: none;
+    }
+
+    input.input-validation-error {
+        border: 1px solid #b94a48 !important;
+    }
+
+    input[type="checkbox"].input-validation-error {
+        border: 0 none;
+    }
+
+    .validation-summary-errors {
+        color: #b94a48;
+    }
+
+    .validation-summary-valid {
+        display: none;
+    }
+</style>
+
+<form asp-action="Register" asp-controller="User" asp-anti-forgery="true" autocomplete="off">
+    <div class="validation" asp-validation-summary="ModelOnly"></div>
+    <div class="centerr container">
+        <h2>Регистрация</h2>
+        <div class="form-group row p-1">
+            <label asp-for="FullName" class="col-lg-3 col-form-label" style="text-wrap:normal">Введите ФИО</label>
+            <div class="col-lg-9">
+                <input type="text" asp-for="FullName" class="form-control">
+                <span asp-validation-for="FullName" />
+            </div>
+        </div>
+        <div class="form-group row p-1">
+            <label asp-for="Login" class="col-lg-3 col-form-label" style="text-wrap:normal">Введите Login</label>
+            <div class="col-lg-9">
+                <input type="text" asp-for="Login" class="form-control">
+                <span asp-validation-for="Login" />
+            </div>
+        </div>
+        <div class="form-group row p-1">
+            <label asp-for="Password" class="col-lg-3 col-form-label" style="text-wrap:normal">Введите пароль</label>
+            <div class="col-lg-9">
+                <input type="password" asp-for="Password" class="form-control">
+                <span asp-validation-for="Password" />
+            </div>
+        </div>
+        <div class="form-group row p-1">
+            <label asp-for="ConfirmPassword" class="col-lg-3 col-form-label" style="text-wrap:normal">Подтвердите пароль</label>
+            <div class="col-lg-9">
+                <input type="password" asp-for="ConfirmPassword" class="form-control">
+                <span asp-validation-for="ConfirmPassword" />
+            </div>
+        </div>
+        <div class="form-group">
+            <input type="submit" value="Регистрация" class="btn btn-outline-dark" />
+        </div>
+    </div>
+</form>

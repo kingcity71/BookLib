@@ -2,8 +2,9 @@
 {
     public enum BookingStatus
     {
-        Waiting,
-        Booked,
-        Expired
+        Waiting,//в ожидании своей очереди
+        Booked,//держит книгу на руках сейчас
+        Expired,//просрочил сдачу
+        Returned//вернул в срок
     }
 }

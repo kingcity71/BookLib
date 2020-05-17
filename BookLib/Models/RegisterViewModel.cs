@@ -1,0 +1,10 @@
+﻿namespace BookLib.Models
+{
+    public class RegisterViewModel
+    {
+        public string Login { get; set; }
+        public string FullName { get; set; }
+        public string Password { get; set; }
+        public string ConfirmPassword { get; set; }
+    }
+}

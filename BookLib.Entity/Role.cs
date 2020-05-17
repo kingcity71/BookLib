@@ -1,8 +1,8 @@
 ﻿namespace BookLib.Entity
 {
-    public class Role
+    public enum Role
     {
-        public int Id { get; set; }
-        public string Description { get; set; }
+        User,
+        Admin
     }
 }

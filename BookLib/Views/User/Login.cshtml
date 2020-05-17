@@ -1,0 +1,47 @@
+﻿@using BookLib.Models;
+@model LoginViewModel;
+@{
+    ViewData["Title"] = "Login";
+}
+
+<style>
+    .center {
+        margin: 0 auto;
+        width: 70%;
+    }
+
+    .errorBox {
+        /*border:1px solid red;*/
+        border-radius: 3px;
+        background: pink;
+        color: red;
+        text-align: center;
+        font-size: 18px;
+    }
+</style>
+<form asp-action="Login" asp-controller="User" asp-anti-forgery="true">
+    <div class="errorBox w-100">
+        <div>@Html.ValidationMessageFor(m => m.Login)</div>
+        <div>@Html.ValidationMessageFor(m => m.Password)</div>
+    </div>
+    <div class="center container">
+        <h2 class="text-center">Вход на сайт</h2>
+        <div class="form-group row p-1">
+            <label asp-for="Login" class="col-lg-3 col-form-label" style="text-wrap:normal">Login</label>
+            <div class="col-lg-9">
+                <input type="text" asp-for="Login" class="form-control">
+                <span asp-validation-for="Login" />
+            </div>
+        </div>
+        <div class="form-group row p-1">
+            <label asp-for="Password" class="col-lg-3 col-form-label" style="text-wrap:normal">Пароль</label>
+            <div class="col-lg-9">
+                <input type="password" asp-for="Password" class="form-control">
+                <span asp-validation-for="Password" />
+            </div>
+        </div>
+        <div class="form-group">
+            <input type="submit" value="Войти" class="btn btn-outline-dark" />
+        </div>
+    </div>
+</form>

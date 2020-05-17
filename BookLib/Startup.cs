@@ -1,6 +1,7 @@
 using BookLib.Data;
 using BookLib.Interface;
 using BookLib.Service;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -22,9 +23,16 @@ namespace BookLib
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            // установка конфигурации подключения
+            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+                    .AddCookie(options => //CookieAuthenticationOptions
+        {
+            options.LoginPath = new Microsoft.AspNetCore.Http.PathString("/User/Login");
+        });
             services.AddControllersWithViews()
                 .AddRazorRuntimeCompilation();
-
+            services.AddAuthorization();
+            services.AddAuthentication();
             services.AddDbContext<BookLibContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
@@ -50,9 +58,8 @@ namespace BookLib
             app.UseStaticFiles();
 
             app.UseRouting();
-
-            app.UseAuthorization();
-
+            app.UseAuthentication();    // аутентификация
+            app.UseAuthorization();     // авторизация
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(
