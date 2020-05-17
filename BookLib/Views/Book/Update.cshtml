@@ -1,14 +1,14 @@
 ﻿@using BookLib.Models;
 @model BookViewModel
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Update";
 }
 <form method="post" autocomplete="off" enctype="multipart/form-data">
-    @Html.HiddenFor(x=>x.Id)
-    @Html.HiddenFor(x=>x.PhotoBase64)
+    @Html.HiddenFor(x => x.Id)
+    @Html.HiddenFor(x => x.PhotoBase64)
     <div class="container">
         <div class="row m-1 w-100">
-            <h3>Создание книги</h3>
+            <h3>Редактирование книги</h3>
         </div>
         <div class="row m-1 w-100">
             <div class="col-9">

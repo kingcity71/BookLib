@@ -3,6 +3,7 @@ using BookLib.Entity;
 using BookLib.Interface;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace BookLib.Service
@@ -24,12 +25,16 @@ namespace BookLib.Service
 
         public Book GetBook(int id)
         {
-            throw new NotImplementedException();
+            var book = _context.Books.FirstOrDefault(x => x.Id == id);
+            return book;
         }
 
         public Book Update(Book book)
         {
-            throw new NotImplementedException();
+            _context.Books.Update(book);
+            _context.SaveChanges();
+            var bookUpdated = _context.Books.FirstOrDefault(x => x.Id == book.Id);
+            return bookUpdated;
         }
     }
 }

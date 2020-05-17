@@ -34,11 +34,30 @@ namespace BookLib.Controllers
             if (ModelState.IsValid)
             {
                 var book = MapBook(bookViewModel);
-                _bookService.Create(book);
+                book = _bookService.Create(book);
+                return RedirectToAction("Update", new { id = book.Id });
             }
             return View(bookViewModel);
         }
-
+        
+        [HttpGet]
+        public IActionResult Update(int id)
+        {
+            var book = _bookService.GetBook(id);
+            var bookViewModel = MapBook(book);
+            return View(bookViewModel);
+        }
+        [HttpPost]
+        public IActionResult Update(BookViewModel bookViewModel)
+        {
+            if (ModelState.IsValid)
+            {
+                var book = MapBook(bookViewModel);
+                book = _bookService.Update(book);
+                bookViewModel = MapBook(book);
+            }
+            return View(bookViewModel);
+        }
         private Book MapBook(BookViewModel bookViewModel)
         {
             var book = new Book()
@@ -60,6 +79,16 @@ namespace BookLib.Controllers
                 book.PhotoBase64 = $"data:image/jpeg;base64, {Convert.ToBase64String(imageData)}";
             }
             return book;
+        }
+        private BookViewModel MapBook(Book book)
+        {
+            return new BookViewModel()
+            {
+                Id = book.Id,
+                Description = book.Description,
+                Name = book.Name,
+                PhotoBase64 = book.PhotoBase64
+            };
         }
     }
 }
