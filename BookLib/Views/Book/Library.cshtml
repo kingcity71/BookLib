@@ -1,0 +1,83 @@
+﻿@using  BookLib.Models;
+@model LibraryViewModel;
+@{
+    ViewData["Title"] = "Library";
+    var bookCount = (double)ViewBag.BookCount;
+    var currentPage = (int)ViewBag.CurrentPage;
+
+    var startPage = currentPage - 3 > 0 ? currentPage - 3 : 1;
+    var maxPage = Math.Ceiling(bookCount / 10);
+    var endPage = startPage + 10 > maxPage
+        ? maxPage
+        : startPage;
+}
+<style>
+    .btn:hover {
+        cursor: pointer;
+    }
+    .pagin-marg{
+        margin-top:10px;
+        margin-bottom:5px;
+    }
+</style>
+<div class="container">
+    <h3 class="text-center">Библиотека</h3>
+    <div class="row">
+        <div class="col-1"></div>
+        <div class="col-9">
+            <input class="form-control w-100" id="searchInput" value="@(Model.Key??string.Empty)" placeholder="Поиск..." />
+        </div>
+        <div class="col-1 btn btn-primary" onclick="search()">Найти</div>
+        <div class="col-1"></div>
+    </div>
+
+    @if (endPage != 1)
+    {
+        <div class="row pagin-marg">
+            <div class="col-1"></div>
+            <div class="col-10">
+                <ul class="pagination">
+                    <li class="page-item">
+                        <a class="page-link" href="/book/library?page=1&key=@Model.Key">Начало</a>
+                    </li>
+                    @for (var i = startPage; i <= endPage; i++)
+                    {
+                        <li class="page-item">
+                            <a class="page-link @(i==currentPage? "font-weight-bold":string.Empty)"
+                               href="/book/library?page=@i&key=@Model.Key">@i</a>
+                        </li>
+                    }
+                    <li class="page-item">
+                        <a class="page-link" href="/book/library?page=@maxPage&key=@Model.Key">Конец</a>
+                    </li>
+                </ul>
+            </div>
+            <div class="col-1"></div>
+        </div>
+    }
+
+    @if (!Model.Books.Any())
+    {
+        <h3>Ничего не найдено</h3>
+    }
+    else
+    {
+        @foreach (var book in Model.Books)
+        {
+            <div class="row">
+                <div class="col-1"></div>
+                <div class="col-10">
+                    <a href="\booking\@book.Id">@book.Name</a>
+                </div>
+                <div class="col-1"></div>
+            </div>
+        }
+    }
+</div>
+<script>
+    let redirect = (url) => (window.location.href = url);
+    let search = () => {
+        let key = $('#searchInput').val();
+        redirect('/book/library?page=1&key=' + key);
+    };
+</script>

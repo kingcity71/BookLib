@@ -58,6 +58,17 @@ namespace BookLib.Controllers
             }
             return View(bookViewModel);
         }
+
+        [HttpGet]
+        public IActionResult Library(int page, string key)
+        {
+            var countOnPage = 10;
+            var books = _bookService.GetBooks(countOnPage, countOnPage * (page - 1), key??string.Empty);
+            ViewBag.BookCount = _bookService.GetBookCount(key??string.Empty);
+            ViewBag.CurrentPage = page;
+            return View(new LibraryViewModel() {Books=books, Key=key ?? string.Empty });
+        }
+        
         private Book MapBook(BookViewModel bookViewModel)
         {
             var book = new Book()
