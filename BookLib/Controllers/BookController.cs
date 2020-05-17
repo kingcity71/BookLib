@@ -43,7 +43,7 @@ namespace BookLib.Controllers
         {
             var book = new Book()
             {
-                Id = bookViewModel.Id,
+                Id = bookViewModel.Id??0,
                 Name = bookViewModel.Name,
                 Description = bookViewModel.Description,
                 PhotoBase64 = bookViewModel.PhotoBase64

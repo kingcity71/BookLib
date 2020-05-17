@@ -3,8 +3,8 @@
 @{
     ViewData["Title"] = "Create";
 }
-<form method="post">
-    @*@Html.HiddenFor(x=>x.Id)*@
+<form method="post" autocomplete="off" enctype="multipart/form-data">
+    @Html.HiddenFor(x=>x.Id)
     @Html.HiddenFor(x=>x.PhotoBase64)
     <div class="container">
         <div class="row m-1 w-100">
@@ -47,7 +47,6 @@
                 {
                     <img src="@Model.PhotoBase64" class="w-100" />
                 }
-
             </div>
         </div>
     </div>
