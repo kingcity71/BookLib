@@ -12,7 +12,10 @@ namespace BookLib.Interface
         IEnumerable<Queue> GetBookQueues(int bookId);
 
         BookingStatus GetUserStatus(int userId);
+        IEnumerable<Queue> GetUserQueue(int userId);
 
         Queue SetWaitingPlace(int bookId, int userId);
+
+        void RefreshStatuses();
     }
 }

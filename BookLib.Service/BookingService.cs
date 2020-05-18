@@ -58,5 +58,18 @@ namespace BookLib.Service
             if (queues.Contains(BookingStatus.Booked))  return BookingStatus.Booked;
             return BookingStatus.Returned;
         }
+
+        public void RefreshStatuses()
+        {
+            var queues = _context.Queues.Where(x => x.BookingStatus == BookingStatus.Booked && x.Deadline<DateTime.Today);
+            foreach (var queue in queues)
+                queue.BookingStatus = BookingStatus.Expired;
+            _context.Update(queues);
+            _context.SaveChanges();
+        }
+
+        public IEnumerable<Queue> GetUserQueue(int userId)
+            => _context.Queues.Where(x => x.UserId == userId)
+            .OrderBy(x => x.BookingStatus).ToList();
     }
 }

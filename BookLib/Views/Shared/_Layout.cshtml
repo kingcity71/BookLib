@@ -24,6 +24,20 @@
                             <li class="nav-item">
                                 <a class="nav-link text-dark" href="/book/library?page=1&key=">Библиотека</a>
                             </li>
+                            @if (User.Identity.Name != "Admin")
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="Book" asp-action="MyBooks">Выйти</a>
+                                </li>
+}
+                            else
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="Book" asp-action="Create">
+                                        Добавить книгу
+                                    </a>
+                                </li>
+                            }
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="User" asp-action="Logout">Выйти</a>
                             </li>

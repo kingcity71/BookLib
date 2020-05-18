@@ -24,7 +24,6 @@ namespace BookLib.Controllers
             var viewModel = new BookingViewModel()
             {
                 Book = _bookService.GetBook(bookId),
-
             };
             return View();
         }

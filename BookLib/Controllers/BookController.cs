@@ -13,10 +13,13 @@ namespace BookLib.Controllers
     public class BookController : Controller
     {
         private readonly IBookService _bookService;
-
-        public BookController(IBookService bookService)
+        private readonly IUserService _userService;
+        private readonly IBookingService _bookingService;
+        public BookController(IBookService bookService, IUserService userService, IBookingService bookingService)
         {
             _bookService = bookService;
+            _userService = userService;
+            _bookingService = bookingService;
         }
         public IActionResult Index()
         {
@@ -35,7 +38,7 @@ namespace BookLib.Controllers
             {
                 var book = MapBook(bookViewModel);
                 book = _bookService.Create(book);
-                return RedirectToAction("Update", new { id = book.Id });
+                return Redirect("/book/library?page=1&key=");
             }
             return View(bookViewModel);
         }
@@ -55,8 +58,31 @@ namespace BookLib.Controllers
                 var book = MapBook(bookViewModel);
                 book = _bookService.Update(book);
                 bookViewModel = MapBook(book);
+                return Redirect("/book/library?page=1&key=");
             }
             return View(bookViewModel);
+        }
+
+        [HttpGet]
+        public IActionResult MyBooks()
+        {
+            var login = User.Identity.Name;
+            var user = _userService.GetUser(login);
+            _bookingService.RefreshStatuses();
+            var userBooks = new List<UserBook>();
+            var userQueues = _bookingService.GetUserQueue(user.Id);
+            foreach(var queue in userQueues)
+            {
+                var book = _bookService.GetBook(queue.Id);
+                userBooks.Add(new UserBook()
+                {
+                    Id = book.Id,
+                    Deadline = queue.Deadline,
+                    Name = book.Name,
+                    Status = queue.BookingStatus
+                });
+            }
+            return View(userBooks);
         }
 
         [HttpGet]

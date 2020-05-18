@@ -1,0 +1,56 @@
+﻿@using BookLib.Models;
+@using BookLib.Entity;
+@model IEnumerable<UserBook>
+@{
+    ViewData["Title"] = "MyBooks";
+    var className = string.Empty;
+    var statusName = string.Empty;
+}
+<div class="container">
+    <h1 class="text-center">Мои книги</h1>
+    @if (Model.Any())
+    {
+        @foreach (var item in Model)
+        {
+            @switch (item.Status)
+            {
+                case BookingStatus.Expired:
+                    className = "danger";
+                    statusName = "Просрочено";
+                    break;
+                case BookingStatus.Waiting:
+                    className = "warning";
+                    statusName = "В очереди";
+                    break;
+                case BookingStatus.Returned:
+                    className = "success";
+                    statusName = "Возвращена";
+                    break;
+                case BookingStatus.Booked:
+                    className = "primary";
+                    statusName = "На руках";
+                    break;
+                default:
+                    break;
+            }
+            <div class="row">
+                <div class="col-10">
+                    <a href="@item.Id">@item.Name</a>
+                    @if (item.Status == BookingStatus.Booked)
+                    {
+                        <span class="font-weight-bold">@item.Deadline.ToShortDateString()</span>
+                    }
+                </div>
+
+                <div class="col-2 btn btn-@className">
+                    @statusName
+                </div>
+            </div>
+        }
+    }
+    else
+    {
+        <h3 class="text-center">Пусто</h3>
+    }
+
+</div>
