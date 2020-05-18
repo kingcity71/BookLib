@@ -64,8 +64,11 @@ namespace BookLib.Service
             var queues = _context.Queues.Where(x => x.BookingStatus == BookingStatus.Booked && x.Deadline<DateTime.Today);
             foreach (var queue in queues)
                 queue.BookingStatus = BookingStatus.Expired;
-            _context.Update(queues);
-            _context.SaveChanges();
+            if (queues != null && queues.Any()) 
+            {
+                _context.Update(queues);
+                _context.SaveChanges();
+            }
         }
 
         public IEnumerable<Queue> GetUserQueue(int userId)

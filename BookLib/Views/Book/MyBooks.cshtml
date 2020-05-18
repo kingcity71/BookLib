@@ -38,7 +38,11 @@
                     <a href="@item.Id">@item.Name</a>
                     @if (item.Status == BookingStatus.Booked)
                     {
-                        <span class="font-weight-bold">@item.Deadline.ToShortDateString()</span>
+                        <span class="font-weight-bold">(Сдать до @item.Deadline.ToShortDateString())</span>
+                    }
+                    @if (item.Status == BookingStatus.Expired)
+                    {
+                        <span class="font-weight-bold" style="color:red">(Дата сдачи @item.Deadline.ToShortDateString())</span>
                     }
                 </div>
 
