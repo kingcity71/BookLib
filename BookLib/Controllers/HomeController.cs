@@ -20,7 +20,10 @@ namespace BookLib.Controllers
 
         public IActionResult Index()
         {
-            return RedirectToAction("Login", "User");
+            if (string.IsNullOrEmpty(User.Identity.Name))
+                return RedirectToAction("Login", "User");
+            else
+                return Redirect("/book/library?page=1&key=");
         }
 
         public IActionResult Privacy()

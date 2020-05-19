@@ -25,7 +25,7 @@ namespace BookLib.Controllers
         {
             var login = User.Identity.Name;
             var user = _userService.GetUser(login);
-
+            _boookingService.RefreshBookStatus(bookId);
             var viewModel = new BookingViewModel()
             {
                 IsUserWait = _boookingService.IsUserWait(bookId, user.Id),
@@ -44,6 +44,14 @@ namespace BookLib.Controllers
         public string MakeBooking(int bookId, int userId)
         {
             return _boookingService.ChangeBookingStatus(bookId, userId, Entity.BookingStatus.Booked);
+        }
+
+        [HttpGet]
+        public string LeaveQueue(int bookId, int userId)
+        {
+            _boookingService.LeaveQueue(bookId, userId);
+            _boookingService.RefreshBookStatusAfterQueueLeave(bookId);
+            return "Вы покинули очередь";
         }
     }
 }

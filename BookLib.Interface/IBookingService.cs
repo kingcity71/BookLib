@@ -17,6 +17,10 @@ namespace BookLib.Interface
 
         Queue SetWaitingPlace(int bookId, int userId);
 
+        void LeaveQueue(int bookId, int userId);
+        void RefreshBookStatusAfterQueueLeave(int bookId);
+        
+        void RefreshBookStatus(int bookId);
         void RefreshStatuses();
 
 

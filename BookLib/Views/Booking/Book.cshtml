@@ -74,7 +74,7 @@
                 else if (Model.IsUserWait)
                 { 
                     <div class="col-4">
-                        <div class="btn btn-primary w-100">
+                        <div class="btn btn-primary w-100"  onclick="leaveQueue()">
                             Покинуть очередь
                         </div>
                         @if (!string.IsNullOrEmpty(queueNum))
@@ -119,5 +119,10 @@
         let bookId = $('#Book_Id').val();
         let currentUserId = $('#CurrentUserId').val();
         redirect(`/booking/MakeBooking?bookId=${bookId}&userId=${currentUserId}`);
+    };
+      let leaveQueue = () => {
+        let bookId = $('#Book_Id').val();
+        let currentUserId = $('#CurrentUserId').val();
+        redirect(`/booking/leaveQueue?bookId=${bookId}&userId=${currentUserId}`);
     };
 </script>
