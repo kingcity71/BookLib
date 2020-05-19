@@ -6,7 +6,7 @@ namespace BookLib.Interface
 {
     public interface IBookingService
     {
-        Queue ChangeBookingStatus(int bookId, int userId, BookingStatus bookingStatus);
+        string ChangeBookingStatus(int bookId, int userId, BookingStatus bookingStatus);
 
         Queue CreateBooking(int bookId, int userId);
 
@@ -22,7 +22,10 @@ namespace BookLib.Interface
 
         int GetQueueNum(int bookId);
         int? GetBookedUserId(int bookId);
-        DateTime? GetAvailableDate(int bookId);
+        DateTime? GetAvailableDate(int bookId, int userId);
         BookingStatus GetBookStatus(int bookId);
+        DateTime? GetDeadLine(int bookId,int userId);
+
+        bool IsUserWait(int bookId, int userId);
     }
 }

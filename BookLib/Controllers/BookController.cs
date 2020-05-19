@@ -73,7 +73,7 @@ namespace BookLib.Controllers
             var userQueues = _bookingService.GetUserQueue(user.Id);
             foreach(var queue in userQueues)
             {
-                var book = _bookService.GetBook(queue.Id);
+                var book = _bookService.GetBook(queue.BookId);
                 userBooks.Add(new UserBook()
                 {
                     Id = book.Id,
