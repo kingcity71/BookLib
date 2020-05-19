@@ -1,4 +1,5 @@
 ﻿using BookLib.Entity;
+using System;
 using System.Collections.Generic;
 
 namespace BookLib.Interface
@@ -17,5 +18,11 @@ namespace BookLib.Interface
         Queue SetWaitingPlace(int bookId, int userId);
 
         void RefreshStatuses();
+
+
+        int GetQueueNum(int bookId);
+        int? GetBookedUserId(int bookId);
+        DateTime? GetAvailableDate(int bookId);
+        BookingStatus GetBookStatus(int bookId);
     }
 }

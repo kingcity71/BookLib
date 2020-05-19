@@ -1,7 +1,62 @@
-﻿
+﻿@using  BookLib.Models;
+@using  BookLib.Entity;
+@model BookingViewModel;
 @{
-    ViewData["Title"] = "Book";
-}
+        ViewData["Title"] = "Book";
+        var imgSrc = string.IsNullOrEmpty(Model.Book.PhotoBase64) ? string.Empty : Model.Book.PhotoBase64;
 
-<h1>Book</h1>
+        var btnText = string.Empty;
+        var btnClass = string.Empty;
+        var availableDate = string.Empty;
+        var queueNum = string.Empty;
 
+        switch (Model.CurrentStatus)
+        {
+            case BookingStatus.Returned:
+                btnText = "Взять";
+                btnClass = "primary";
+                break;
+            case BookingStatus.Waiting:
+            case BookingStatus.Expired:
+            case BookingStatus.Booked:
+                btnText = "Встать в очередь";
+                btnClass = "warning";
+                availableDate = Model.AvailableDate.Value.ToShortDateString();
+                queueNum = Model.QueueNum.ToString();
+                break;
+            default:
+                break;
+        }
+    }
+<div class="container">
+<div class="row">
+<div class="col-9">
+    <div class="row">
+        <div class="col-9">
+            <h3>@Model.Book.Name</h3>
+        </div>
+        <div class="col-3">
+            <div class="btn btn-@btnClass w-100">
+                @btnText
+            </div>
+            @if (!string.IsNullOrEmpty(queueNum))
+            {
+                <div class="border rounded w-100">
+                    <span>Место в очереди : @queueNum</span>
+                    <span>Предположительная дата : @availableDate</span>
+                </div>
+            }
+
+        </div>
+    </div>
+    <div class="row">
+        <div class="border border-primary">
+            @Model.Book.Description
+        </div>
+    </div>
+</div>
+<div class="col-3">
+    <img src = "@imgSrc" style="height:200px" />
+</div>
+</div>
+</div>

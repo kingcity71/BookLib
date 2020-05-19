@@ -24,8 +24,11 @@ namespace BookLib.Controllers
             var viewModel = new BookingViewModel()
             {
                 Book = _bookService.GetBook(bookId),
+                AvailableDate = _boookingService.GetAvailableDate(bookId),
+                BookedUserId = _boookingService.GetBookedUserId(bookId),
+                CurrentStatus = _boookingService.GetBookStatus(bookId)
             };
-            return View();
+            return View(viewModel);
         }
 
         [HttpGet]

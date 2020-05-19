@@ -74,5 +74,37 @@ namespace BookLib.Service
         public IEnumerable<Queue> GetUserQueue(int userId)
             => _context.Queues.Where(x => x.UserId == userId)
             .OrderBy(x => x.BookingStatus).ToList();
+
+        public int GetQueueNum(int bookId)
+        => _context.Queues.Count(x => x.BookingStatus == BookingStatus.Waiting);
+
+        public int? GetBookedUserId(int bookId)
+        => _context
+            .Queues
+            .FirstOrDefault(x => x.BookingStatus == BookingStatus.Expired || x.BookingStatus == BookingStatus.Waiting)?
+            .UserId;
+
+        public DateTime? GetAvailableDate(int bookId)
+        => _context
+            .Queues
+            .Where(x => x.BookingStatus == BookingStatus.Waiting)
+            .OrderByDescending(x => x.BookingStatus)
+            .FirstOrDefault()
+            .Deadline;
+
+        public BookingStatus GetBookStatus(int bookId)
+        {
+            var queues = _context.Queues
+                .Where(x => x.BookId == bookId)
+                .Select(x => x.BookingStatus)
+                .Distinct()
+                .ToList();
+            if (!queues?.Any()==true) return BookingStatus.Returned;
+
+            if (queues.Contains(BookingStatus.Expired)) return BookingStatus.Expired;
+            if (queues.Contains(BookingStatus.Waiting)) return BookingStatus.Waiting;
+            if (queues.Contains(BookingStatus.Booked)) return BookingStatus.Booked;
+            return BookingStatus.Returned;
+        }
     }
 }
