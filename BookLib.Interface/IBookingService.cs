@@ -10,27 +10,35 @@ namespace BookLib.Interface
 
         Queue CreateBooking(int bookId, int userId);
 
+        DateTime? GetAvailableDate(int bookId, int userId);
+
+        int? GetBookedUserId(int bookId);
+
         IEnumerable<Queue> GetBookQueues(int bookId);
 
-        BookingStatus GetUserStatus(int userId);
-        IEnumerable<Queue> GetUserQueue(int userId);
+        BookingStatus GetBookStatus(int bookId);
 
-        Queue SetWaitingPlace(int bookId, int userId);
-
-        void LeaveQueue(int bookId, int userId);
-        void RefreshBookStatusAfterQueueLeave(int bookId);
-        
-        void RefreshBookStatus(int bookId);
-        void RefreshStatuses();
-
+        DateTime? GetDeadLine(int bookId, int userId);
 
         int GetQueueNum(int bookId);
-        int? GetBookedUserId(int bookId);
-        DateTime? GetAvailableDate(int bookId, int userId);
-        BookingStatus GetBookStatus(int bookId);
+
         BookingStatus? GetUserBookStatus(int bookId, int userId);
-        DateTime? GetDeadLine(int bookId,int userId);
+
+        IEnumerable<Queue> GetUserQueue(int userId);
+
+        BookingStatus GetUserStatus(int userId);
         int? GetUserWaitingQueueNum(int bookId, int userId);
+
         bool IsUserWait(int bookId, int userId);
+
+        void LeaveQueue(int bookId, int userId);
+
+        void RefreshBookStatus(int bookId);
+
+        void RefreshBookStatusAfterQueueLeave(int bookId);
+
+        void RefreshStatuses();
+
+        Queue SetWaitingPlace(int bookId, int userId);
     }
 }

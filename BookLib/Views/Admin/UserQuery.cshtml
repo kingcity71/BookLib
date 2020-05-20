@@ -1,0 +1,85 @@
+﻿@using BookLib.Models;
+@using BookLib.Entity;
+@model UserQueryViewModel;
+@{
+    ViewData["Title"] = "BookQueue";
+    var bookingStatus = string.Empty;
+    var btnClass = string.Empty;
+    
+  
+}
+
+<div class="container">
+    <div class="row">
+        <h2 class="text-center">Очереди "@Model.UserName"</h2>
+    </div>
+    <hr />
+    @if (!Model.Queues.Any())
+    {
+        <div class="row">
+            <h3 class="text-center">Очередь пуста</h3>
+        </div>
+    }
+    else
+    {
+        <div class="row m-1">
+            <div class="col-2">
+                <strong>Дата возрата</strong>
+            </div>
+            <div class="col-4">
+                <strong>Книга</strong>
+            </div>
+            <div class="col-3">
+                <strong>Состояние</strong>
+            </div>
+            <div class="col-3">
+                <strong>Действие</strong>
+            </div>
+        </div>
+        <hr />
+        @foreach (var queueUser in Model.Queues)
+        {
+            <div class="row m-1">
+                <div class="col-2">
+                    @queueUser.Key.Deadline.ToShortDateString()
+                </div>
+                <div class="col-4">
+                    <a href="\book\update?id=@queueUser.Value.Id">@queueUser.Value.Name</a>
+                </div>
+                <div class="col-3">
+                    @switch (queueUser.Key.BookingStatus)
+                    {
+                        case BookingStatus.Booked:
+                            bookingStatus = "На руках";
+                            btnClass = "primary";
+                           
+                            break;
+                        case BookingStatus.Expired:
+                            bookingStatus = "Просрочена";
+                            btnClass = "danger";
+                            
+                            break;
+                        case BookingStatus.Waiting:
+                            bookingStatus = "В очереди";
+                            btnClass = "warning";
+                          
+                            break;
+                        case BookingStatus.Returned:
+                            bookingStatus = "Возвращена";
+                            btnClass = "success";
+                           
+                            break;
+                    }
+                    <div class="btn w-100">
+                        <div class="btn btn-@btnClass">
+                            @bookingStatus
+                        </div>
+                    </div>
+                </div>
+                <div class="col-3">
+
+                </div>
+            </div>
+        }
+    }
+</div>

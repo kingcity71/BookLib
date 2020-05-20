@@ -1,0 +1,127 @@
+﻿@using BookLib.Models;
+@using BookLib.Entity;
+@model BookQueuesViewModel;
+@{
+    ViewData["Title"] = "BookQueue";
+    var bookingStatus = string.Empty;
+    var btnClass = string.Empty;
+
+    var onclickAction = string.Empty;
+    var isVisibleActionBtn = false;
+    var actionBtnName = string.Empty;
+}
+<style>
+    .btn:hover{
+        cursor:pointer;
+    }
+</style>
+@Html.HiddenFor(x=>x.Id)
+<div class="container">
+    <div class="row">
+        <h2 class="text-center">Очередь на книгу "@Model.BookName"</h2>
+    </div>
+    <hr />
+    @if (!Model.Queues.Any())
+    {
+        <div class="row">
+            <h3 class="text-center">Очередь пуста</h3>
+        </div>
+    }
+    else
+    {
+        <div class="row m-1">
+            <div class="col-2  text-center">
+                <strong>Дата возрата</strong>
+            </div>
+            <div class="col-4  text-center">
+                <strong>Читатель</strong>
+            </div>
+            <div class="col-3  text-center">
+                <strong>Состояние</strong>
+            </div>
+            <div class="col-3  text-center">
+                <strong>Действие</strong>
+            </div>
+        </div>
+        <hr />
+        @foreach (var queueUser in Model.Queues)
+        {
+            <div class="row m-1">
+                <div class="col-2  text-center">
+                    @queueUser.Key.Deadline.ToShortDateString()
+                </div>
+                <div class="col-4  text-center">
+                    <a href="\admin\UserQuery?userId=@(queueUser.Value.Id)">@queueUser.Value.FullName</a>
+                </div>
+                <div class="col-3  text-center">
+                    @switch (queueUser.Key.BookingStatus)
+                    {
+                        case BookingStatus.Booked:
+                            bookingStatus = "На руках";
+                            btnClass = "primary";
+                            isVisibleActionBtn = true;
+                            actionBtnName = "Вернуть";
+                            onclickAction = "cancelBooking({0})";
+                            break;
+                        case BookingStatus.Expired:
+                            bookingStatus = "Просрочена";
+                            btnClass = "danger";
+                            isVisibleActionBtn = true;
+                            actionBtnName = "Вернуть";
+                            onclickAction = "cancelBooking({0})";
+                            break;
+                        case BookingStatus.Waiting:
+                            bookingStatus = "В ожидании";
+                            btnClass = "warning";
+                            isVisibleActionBtn = true;
+                            actionBtnName = "Убрать из очереди";
+                            onclickAction = "leaveQueue({0})";
+                            break;
+                        case BookingStatus.Returned:
+                            bookingStatus = "Возвращена";
+                            btnClass = "success";
+                            isVisibleActionBtn = false;
+                            break;
+                    }
+                    <div class="btn w-100 text-center">
+                        @bookingStatus
+                    </div>
+                </div>
+                @if (isVisibleActionBtn)
+                {
+                    <div class="col-3">
+                        <div class="btn btn-@btnClass"
+                             onclick="@(string.Format(onclickAction, queueUser.Value.Id))">
+                            @actionBtnName
+                        </div>
+                    </div>
+                }
+
+            </div>
+        }
+    }
+</div>
+
+<script>
+    let redirect = (url) => (window.location.href = url);
+    let request = (url) => (
+        $.ajax({
+            url: url
+        }).done(function (result) {
+            alert(result);
+            redirect('/admin/bookQueue?bookId=@Model.Id');
+        })
+    );
+    let leaveQueue = (userId) => {
+        let bookId = $('#Id').val();
+        let currentUserId = userId;
+        let url = `/booking/leaveQueue?bookId=${bookId}&userId=${currentUserId}`;
+        request(url);
+    };
+    let cancelBooking = (userId) => {
+        let bookId = $('#Id').val();
+        let currentUserId = userId;
+        let url = `/booking/CancelBooking?bookId=${bookId}&userId=${currentUserId}`;
+        request(url);
+    };
+</script>

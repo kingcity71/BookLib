@@ -24,7 +24,7 @@
                             <li class="nav-item">
                                 <a class="nav-link text-dark" href="/book/library?page=1&key=">Библиотека</a>
                             </li>
-                            @if (User.Identity.Name != "Admin")
+                            @if (User.Identity.Name.ToLower() != "admin")
                             {
                                 <li class="nav-item">
                                     <a class="nav-link text-dark" asp-area="" asp-controller="Book" asp-action="MyBooks">Мои книги</a>

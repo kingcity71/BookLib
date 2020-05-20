@@ -3,12 +3,24 @@
 @{
     ViewData["Title"] = "Update";
 }
+<style>
+    .btn :hover{
+        cursor:pointer;
+    }
+</style>
 <form method="post" autocomplete="off" enctype="multipart/form-data">
     @Html.HiddenFor(x => x.Id)
     @Html.HiddenFor(x => x.PhotoBase64)
     <div class="container">
         <div class="row m-1 w-100">
-            <h3>Редактирование книги</h3>
+            <div class="col-9">
+                <h3>Редактирование книги</h3>
+            </div>
+            <div class="col-3">
+                <div class="btn btn-warning" onclick="bookQueue()">
+                    Очередь
+                </div>
+            </div>
         </div>
         <div class="row m-1 w-100">
             <div class="col-9">
@@ -52,6 +64,13 @@
     </div>
 </form>
 <script>
+    let redirect = (url) => (window.location.href = url);
+    let bookQueue = () => {
+        let bookId = $('#Id').val();
+        let url = `/admin/bookQueue?bookId=${bookId}`;
+        redirect(url);
+    };
+    
     $('#Photo').on('change', function () {
         let el = $(this);
         var file = el[0].files[0];
