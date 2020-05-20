@@ -157,7 +157,7 @@ namespace BookLib.Service
         //  - Сдача просроченной книги
         private void UpdateWaiters(int bookId)
         {
-            if (!_context.Queues.Any(x => x.BookId == bookId && x.BookingStatus == BookingStatus.Expired)) return;
+            if (!_context.Queues.Any(x => x.BookId == bookId && x.BookingStatus == BookingStatus.Waiting)) return;
             var queues = _context.Queues
                 .Where(x => x.BookId == bookId && x.BookingStatus == BookingStatus.Waiting)
                 .OrderBy(x => x.Deadline)
