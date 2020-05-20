@@ -30,12 +30,14 @@ namespace BookLib.Controllers
             {
                 IsUserWait = _boookingService.IsUserWait(bookId, user.Id),
                 CurrentUserId = user.Id,
-                Deadline = _boookingService.GetDeadLine(bookId,user.Id),
+                Deadline = _boookingService.GetDeadLine(bookId, user.Id),
                 Book = _bookService.GetBook(bookId),
-                AvailableDate = _boookingService.GetAvailableDate(bookId,user.Id),
+                AvailableDate = _boookingService.GetAvailableDate(bookId, user.Id),
                 BookedUserId = _boookingService.GetBookedUserId(bookId),
                 CurrentStatus = _boookingService.GetBookStatus(bookId),
-                QueueNum = _boookingService.GetQueueNum(bookId)
+                QueueNum = _boookingService.GetQueueNum(bookId),
+                UserBookStatus = _boookingService.GetUserBookStatus(bookId, user.Id),
+                UserQueueNum = _boookingService.GetUserWaitingQueueNum(bookId, user.Id)
             };
             return View(viewModel);
         }
@@ -52,6 +54,13 @@ namespace BookLib.Controllers
             _boookingService.LeaveQueue(bookId, userId);
             _boookingService.RefreshBookStatusAfterQueueLeave(bookId);
             return "Вы покинули очередь";
+        }
+
+        [HttpGet]
+        public string CancelBooking(int bookId, int userId)
+        {
+            _boookingService.RefreshBookStatus(bookId);
+            return _boookingService.ChangeBookingStatus(bookId, userId, Entity.BookingStatus.Returned);
         }
     }
 }

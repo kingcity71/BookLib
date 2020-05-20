@@ -28,8 +28,9 @@ namespace BookLib.Interface
         int? GetBookedUserId(int bookId);
         DateTime? GetAvailableDate(int bookId, int userId);
         BookingStatus GetBookStatus(int bookId);
+        BookingStatus? GetUserBookStatus(int bookId, int userId);
         DateTime? GetDeadLine(int bookId,int userId);
-
+        int? GetUserWaitingQueueNum(int bookId, int userId);
         bool IsUserWait(int bookId, int userId);
     }
 }

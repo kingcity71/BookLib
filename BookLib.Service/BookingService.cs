@@ -45,7 +45,7 @@ namespace BookLib.Service
                 if (_context.Queues.Any(x => x.BookingStatus == BookingStatus.Booked && x.BookId == bookId))
                 {
                     var targetDate = _context.Queues.FirstOrDefault(x => x.BookingStatus == BookingStatus.Booked && x.BookId == bookId).Deadline;
-                    _context.Queues.Add(new Queue() { Deadline = targetDate, BookId = bookId, UserId = userId, BookingStatus = BookingStatus.Waiting });
+                    _context.Queues.Add(new Queue() { Deadline = targetDate.AddDays(7), BookId = bookId, UserId = userId, BookingStatus = BookingStatus.Waiting });
                     _context.SaveChanges();
                     return "Вы успешно заняли место в очереди";
                 }
@@ -59,10 +59,40 @@ namespace BookLib.Service
                 _context.SaveChanges();
                 return $"Вы взяли книгу до {DateTime.Today.AddDays(7).ToShortDateString()}";
             }
-            //if (BookingStatus.Returned== bookingStatus)
-            //{
-
-            //}
+            if (BookingStatus.Returned == bookingStatus)
+            {
+                var msg = "Вы вернули книгу";
+                var bookQueue = _context.Queues.Where(x => x.BookId == bookId)
+                    .OrderBy(x=>x.Deadline)
+                    .ToList();
+                //находим текущего владельца (статус "На руках" или "Просрочено")
+                var current = bookQueue.FirstOrDefault(x => new[] { BookingStatus.Booked, BookingStatus.Expired }.Contains(x.BookingStatus));
+                //меняем статус на "Вернул"
+                var prevDeadLine = current.Deadline;
+                 if (current.Deadline != DateTime.Today && current.BookingStatus == BookingStatus.Booked)
+                    current.Deadline = DateTime.Today;
+                
+                current.BookingStatus = BookingStatus.Returned;
+               
+                _context.Queues.Update(current);
+                _context.SaveChanges();
+                //если текущая дата дедлайна не равна сегодня, нужно причесать другие дедлайны
+                if(prevDeadLine != DateTime.Today)
+                    //обновляем дедлайны
+                    UpdateWaiters(bookId);
+                //ищем ожидающих на очереди
+                var waitList = bookQueue
+                    .Where(x => x.BookingStatus == BookingStatus.Waiting).ToList();
+                if (!waitList.Any()) return msg;
+                //если таковые есть, то дергаем того, у кого дедлайн ближайший
+                var minDeadline = waitList.Min(x => x.Deadline);
+                var waiter = waitList.FirstOrDefault(x => x.Deadline == minDeadline);
+                //меняем статус ожидающего на "Забронено"
+                waiter.BookingStatus = BookingStatus.Booked;
+                _context.Queues.Update(waiter);
+                _context.SaveChanges();
+                return msg;
+            }
             return string.Empty;
         }
 
@@ -104,6 +134,7 @@ namespace BookLib.Service
             if (queues.Contains(BookingStatus.Booked)) return BookingStatus.Booked;
             return BookingStatus.Returned;
         }
+        
         //обновление времени в очередях
         public void RefreshBookStatus(int bookId)
         {
@@ -116,9 +147,17 @@ namespace BookLib.Service
                 _context.Queues.Update(queue);
                 _context.SaveChanges();
             }
-            //если нет просроченых - выход
-            if (!_context.Queues.Any(x => x.BookId == bookId && x.BookingStatus == BookingStatus.Expired)) return;
+            UpdateWaiters(bookId);
+        }
 
+        //обновление времени ожидающих
+        //нужно если:
+        //  - Есть просроченная книга, тогда нужно двигать дедлайны, пока она не будет сдана
+        //  - Книги сдана раньше времени
+        //  - Сдача просроченной книги
+        private void UpdateWaiters(int bookId)
+        {
+            if (!_context.Queues.Any(x => x.BookId == bookId && x.BookingStatus == BookingStatus.Expired)) return;
             var queues = _context.Queues
                 .Where(x => x.BookId == bookId && x.BookingStatus == BookingStatus.Waiting)
                 .OrderBy(x => x.Deadline)
@@ -135,7 +174,7 @@ namespace BookLib.Service
             {
                 queueT.Deadline = currentDeadline;
                 currentDeadline = currentDeadline.AddDays(7);
-                _context.Queues.Update(queue);
+                _context.Queues.Update(queueT);
                 _context.SaveChanges();
 
             }
@@ -152,8 +191,9 @@ namespace BookLib.Service
             var targetDate = 
                 _context.Queues.Any(x=>bookId==x.BookId && x.BookingStatus == BookingStatus.Expired)?
                 DateTime.Today.AddDays(7)
-                :_context.Queues.FirstOrDefault(x => x.BookingStatus == BookingStatus.Booked).Deadline.AddDays(7);
-            foreach(var q in queue)
+                :_context.Queues.FirstOrDefault(x => bookId == x.BookId && x.BookingStatus == BookingStatus.Booked).Deadline.AddDays(7);
+            var q23 = _context.Queues.FirstOrDefault(x => bookId == x.BookId && x.BookingStatus == BookingStatus.Booked).Deadline.AddDays(7);
+            foreach (var q in queue)
             {
                 q.Deadline = targetDate;
                 targetDate = targetDate.AddDays(7);
@@ -184,6 +224,7 @@ namespace BookLib.Service
         public int GetQueueNum(int bookId)
         {
             var num = _context.Queues.Count(x =>x.BookId==bookId && x.BookingStatus == BookingStatus.Waiting);
+            num++;
             if (num == 0) num = _context.Queues.Count(x => x.BookId == bookId && x.BookingStatus == BookingStatus.Expired);
             if (num == 0) num = _context.Queues.Count(x => x.BookId == bookId && x.BookingStatus == BookingStatus.Booked);
             return num;
@@ -228,6 +269,17 @@ namespace BookLib.Service
             if (queues.Contains(BookingStatus.Booked)) return BookingStatus.Booked;
             return BookingStatus.Returned;
         }
+        
+        public BookingStatus? GetUserBookStatus(int bookId, int userId)
+        {
+            var bookingStatus = _context.Queues
+                .Where(x => x.BookId == bookId && x.UserId == userId)
+                .OrderByDescending(x => x.Deadline)
+                .Select(x => x.BookingStatus)
+                .FirstOrDefault();
+            return bookingStatus;
+        }
+        
         public DateTime? GetDeadLine(int bookId, int userId)
             => _context.Queues.FirstOrDefault(x => x.UserId == userId && x.BookId == bookId
             && (x.BookingStatus == BookingStatus.Booked || x.BookingStatus == BookingStatus.Expired))
@@ -241,6 +293,19 @@ namespace BookLib.Service
             var queue = _context.Queues.FirstOrDefault(x => x.BookId == bookId && userId == x.UserId);
             _context.Queues.Remove(queue);
             _context.SaveChanges();
+        }
+
+        public int? GetUserWaitingQueueNum(int bookId, int userId)
+        {
+            var queue = _context
+                .Queues
+                .Where(x => bookId == x.BookId && x.BookingStatus == BookingStatus.Waiting)
+                .OrderBy(x => x.Deadline)
+                .ToList();
+
+            if(queue.Any(x=>x.UserId == userId))
+                return queue.FindIndex(x => x.UserId == userId) + 1;
+            return null;
         }
     }
 }

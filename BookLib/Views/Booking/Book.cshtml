@@ -45,23 +45,23 @@
                     <h3>@Model.Book.Name</h3>
                 </div>
                 @if (Model.BookedUserId != null && Model.BookedUserId.Value == Model.CurrentUserId
-            && (Model.CurrentStatus == BookingStatus.Expired
-            || Model.CurrentStatus == BookingStatus.Booked))
+         && (Model.UserBookStatus == BookingStatus.Expired
+         || Model.UserBookStatus == BookingStatus.Booked))
                 {
                     <div class="col-4">
 
-                        @if (Model.CurrentStatus == BookingStatus.Expired)
+                        @if (Model.UserBookStatus == BookingStatus.Expired)
                         {
-                            <div class="btn btn-danger w-100">
+                            <div class="btn btn-danger w-100" onclick="cancelBooking()">
                                 Сдать книгу
                             </div>
                             <div class="border rounded w-100 small">
                                 <span style="color:red">Дата возврата просрочена: @Model.Deadline.Value.ToShortDateString()</span>
                             </div>
                         }
-                        @if (Model.CurrentStatus == BookingStatus.Booked)
+                        @if (Model.UserBookStatus == BookingStatus.Booked)
                         {
-                            <div class="btn btn-primary w-100">
+                            <div class="btn btn-primary w-100" onclick="cancelBooking()">
                                 Сдать книгу
                             </div>
                             <div class="border rounded w-100 small">
@@ -72,15 +72,15 @@
                     </div>
                 }
                 else if (Model.IsUserWait)
-                { 
+                {
                     <div class="col-4">
-                        <div class="btn btn-primary w-100"  onclick="leaveQueue()">
+                        <div class="btn btn-primary w-100" onclick="leaveQueue()">
                             Покинуть очередь
                         </div>
                         @if (!string.IsNullOrEmpty(queueNum))
                         {
                             <div class="border rounded w-100 small">
-                                <div>Место в очереди :  @($"{(isNext ? "Cледующий" : queueNum.ToString())}")</div>
+                                <div>Место в очереди :  @($"{(Model.UserQueueNum==1 ? "Cледующий" : Model.UserQueueNum.ToString())}")</div>
                                 <div>Дата : @availableDate</div>
                             </div>
                         }
@@ -115,14 +115,32 @@
 </div>
 <script>
     let redirect = (url) => (window.location.href = url);
+
+    let request = (url) => (
+        $.ajax({
+            url: url
+        }).done(function (result) {
+            alert(result);
+            redirect('/book/MyBooks/');
+        })
+    );
+
     let toBook = () => {
         let bookId = $('#Book_Id').val();
         let currentUserId = $('#CurrentUserId').val();
-        redirect(`/booking/MakeBooking?bookId=${bookId}&userId=${currentUserId}`);
+        let url = `/booking/MakeBooking?bookId=${bookId}&userId=${currentUserId}`;
+        request(url);
     };
-      let leaveQueue = () => {
+    let leaveQueue = () => {
         let bookId = $('#Book_Id').val();
         let currentUserId = $('#CurrentUserId').val();
-        redirect(`/booking/leaveQueue?bookId=${bookId}&userId=${currentUserId}`);
+        let url = `/booking/leaveQueue?bookId=${bookId}&userId=${currentUserId}`;
+        request(url);
+    };
+    let cancelBooking = () => {
+        let bookId = $('#Book_Id').val();
+        let currentUserId = $('#CurrentUserId').val();
+        let url = `/booking/CancelBooking?bookId=${bookId}&userId=${currentUserId}`;
+        request(url);
     };
 </script>

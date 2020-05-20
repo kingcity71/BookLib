@@ -6,6 +6,8 @@ namespace BookLib.Models
 {
     public class BookingViewModel
     {
+        public int? UserQueueNum { get; set; }
+        public BookingStatus? UserBookStatus { get; set; }
         public bool IsUserWait { get; set; }
         public DateTime? Deadline { get; set; }
         public int CurrentUserId { get; set; }
