@@ -43,6 +43,7 @@
             <div class="row">
                 <div class="col-8">
                     <h3>@Model.Book.Name</h3>
+                    <h6>@Model.LibName</h6>
                 </div>
                 @if (Model.BookedUserId != null && Model.BookedUserId.Value == Model.CurrentUserId
          && (Model.UserBookStatus == BookingStatus.Expired

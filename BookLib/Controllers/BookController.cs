@@ -7,6 +7,7 @@ using BookLib.Entity;
 using BookLib.Interface;
 using BookLib.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace BookLib.Controllers
 {
@@ -15,11 +16,17 @@ namespace BookLib.Controllers
         private readonly IBookService _bookService;
         private readonly IUserService _userService;
         private readonly IBookingService _bookingService;
-        public BookController(IBookService bookService, IUserService userService, IBookingService bookingService)
+        private readonly ILibraryService _libraryService;
+
+        public BookController(IBookService bookService, 
+            IUserService userService,
+            IBookingService bookingService,
+            ILibraryService libraryService)
         {
             _bookService = bookService;
             _userService = userService;
             _bookingService = bookingService;
+            _libraryService = libraryService;
         }
         public IActionResult Index()
         {
@@ -29,7 +36,16 @@ namespace BookLib.Controllers
         [HttpGet]
         public IActionResult Create()
         {
-            return View();
+            var viewModel = new BookViewModel()
+            {
+                Libs = _libraryService.GetLibraries()
+                .Select(x => new SelectListItem()
+                {
+                    Text = $"{x.Name}, {x.Address}",
+                    Value = x.Id.ToString()
+                })
+            };
+            return View(viewModel);
         }
         [HttpPost]
         public IActionResult Create(BookViewModel bookViewModel)
@@ -40,6 +56,13 @@ namespace BookLib.Controllers
                 book = _bookService.Create(book);
                 return Redirect("/book/library?page=1&key=");
             }
+            bookViewModel.Libs = _libraryService.GetLibraries()
+                .Select(x => new SelectListItem()
+                {
+                    Text = $"{x.Name}, {x.Address}",
+                    Selected = bookViewModel.LibId==x.Id,
+                    Value = x.Id.ToString()
+                });
             return View(bookViewModel);
         }
         
@@ -48,6 +71,13 @@ namespace BookLib.Controllers
         {
             var book = _bookService.GetBook(id);
             var bookViewModel = MapBook(book);
+            bookViewModel.Libs = _libraryService.GetLibraries()
+                .Select(x => new SelectListItem()
+                {
+                    Text = $"{x.Name}, {x.Address}",
+                    Selected = book.LibraryId == x.Id,
+                    Value = x.Id.ToString()
+                });
             return View(bookViewModel);
         }
         [HttpPost]
@@ -60,6 +90,13 @@ namespace BookLib.Controllers
                 bookViewModel = MapBook(book);
                 return Redirect("/book/library?page=1&key=");
             }
+            bookViewModel.Libs = _libraryService.GetLibraries()
+                .Select(x => new SelectListItem()
+                {
+                    Text = $"{x.Name}, {x.Address}",
+                    Selected = bookViewModel.LibId == x.Id,
+                    Value = x.Id.ToString()
+                });
             return View(bookViewModel);
         }
 
@@ -102,7 +139,8 @@ namespace BookLib.Controllers
                 Id = bookViewModel.Id??0,
                 Name = bookViewModel.Name,
                 Description = bookViewModel.Description,
-                PhotoBase64 = bookViewModel.PhotoBase64
+                PhotoBase64 = bookViewModel.PhotoBase64,
+                LibraryId = bookViewModel.LibId
             };
 
             if (bookViewModel.Photo != null)
@@ -124,7 +162,8 @@ namespace BookLib.Controllers
                 Id = book.Id,
                 Description = book.Description,
                 Name = book.Name,
-                PhotoBase64 = book.PhotoBase64
+                PhotoBase64 = book.PhotoBase64,
+                LibId = book.LibraryId
             };
         }
     }

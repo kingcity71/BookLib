@@ -1,0 +1,34 @@
+﻿@using BookLib.Entity;
+@model Library
+@{
+    ViewData["Title"] = "Create";
+}
+<style>
+    .btn :hover{
+        cursor:pointer;
+    }
+</style>
+<div class="container">
+    <h1>Добавить библиотеку</h1>
+    <form method="post">
+        <div class="row  m-1 w-100">
+            <div class="col-3">
+                <label>Название</label>
+            </div>
+            <div class="col-9">
+                @Html.TextBoxFor(x => x.Name, new { @class = "form-control w-100" })
+            </div>
+        </div>
+        <div class="row  m-1 w-100">
+            <div class="col-3">
+                <label>Адрес</label>
+            </div>
+            <div class="col-9">
+                @Html.TextBoxFor(x => x.Address, new { @class = "form-control w-100" })
+            </div>
+        </div>
+        <button class="btn btn-success">
+            Сохранить
+        </button>
+    </form>
+</div>

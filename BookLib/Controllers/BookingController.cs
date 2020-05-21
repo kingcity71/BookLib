@@ -13,12 +13,17 @@ namespace BookLib.Controllers
         private readonly IBookService _bookService;
         private readonly IBookingService _boookingService;
         private readonly IUserService _userService;
+        private readonly ILibraryService _libraryService;
 
-        public BookingController(IBookService bookService, IBookingService bookingService, IUserService userService)
+        public BookingController(IBookService bookService, 
+            IBookingService bookingService,
+            IUserService userService,
+            ILibraryService libraryService)
         {
             _bookService = bookService;
             _boookingService = bookingService;
             _userService = userService;
+            _libraryService = libraryService;
         }
         [HttpGet]
         public IActionResult Book(int bookId)
@@ -26,18 +31,21 @@ namespace BookLib.Controllers
             var login = User.Identity.Name;
             var user = _userService.GetUser(login);
             _boookingService.RefreshBookStatus(bookId);
+            var book = _bookService.GetBook(bookId);
+            var lib = _libraryService.GetLibrary(book.LibraryId);
             var viewModel = new BookingViewModel()
             {
                 IsUserWait = _boookingService.IsUserWait(bookId, user.Id),
                 CurrentUserId = user.Id,
                 Deadline = _boookingService.GetDeadLine(bookId, user.Id),
-                Book = _bookService.GetBook(bookId),
+                Book = book,
                 AvailableDate = _boookingService.GetAvailableDate(bookId, user.Id),
                 BookedUserId = _boookingService.GetBookedUserId(bookId),
                 CurrentStatus = _boookingService.GetBookStatus(bookId),
                 QueueNum = _boookingService.GetQueueNum(bookId),
                 UserBookStatus = _boookingService.GetUserBookStatus(bookId, user.Id),
-                UserQueueNum = _boookingService.GetUserWaitingQueueNum(bookId, user.Id)
+                UserQueueNum = _boookingService.GetUserWaitingQueueNum(bookId, user.Id),
+                LibName = lib != null? $"{lib.Name},{lib.Address}":string.Empty
             };
             return View(viewModel);
         }

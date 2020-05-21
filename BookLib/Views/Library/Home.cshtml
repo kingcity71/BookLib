@@ -1,0 +1,17 @@
+﻿@using BookLib.Entity;
+@model IEnumerable<Library>
+@{
+    ViewData["Title"] = "Home";
+}
+<div class="container">
+    <div class="row">
+        <h3>Список библиотек</h3>
+    </div>
+    <hr />
+    @foreach (var lib in Model)
+    {
+        <div class="row">
+            <a href="/library/update/@lib.Id">@(lib.Name), @lib.Address</a>
+        </div>
+    }
+</div>
