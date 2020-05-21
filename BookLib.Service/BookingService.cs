@@ -291,10 +291,16 @@ namespace BookLib.Service
 
             //если нет ожидающих - выход
             if (!queues.Any()) return;
-            //если у первого времени ожидающего == через неделю - выход
-            if (queues.FirstOrDefault().Deadline == DateTime.Today.AddDays(7)) return;
+            
 
-            var currentDeadline = DateTime.Today.AddDays(7);
+            var bookedQueue = _context.Queues.FirstOrDefault(x => x.BookingStatus == BookingStatus.Booked);
+
+            var currentDeadline = 
+                bookedQueue!=null? bookedQueue.Deadline.AddDays(7):
+                DateTime.Today.AddDays(7);
+
+            //если у первого времени ожидающего == через неделю - выход
+            if (queues.FirstOrDefault().Deadline == currentDeadline) return;
 
             foreach (var queueT in queues)
             {
